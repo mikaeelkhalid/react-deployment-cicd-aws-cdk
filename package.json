@@ -1,8 +1,12 @@
 {
   "name": "react-deployment-cicd-aws-cdk",
   "version": "0.1.0",
+  "author": {
+    "name": "mikaeel khalid",
+    "url": "https://www.mikaeels.com"
+  },
   "bin": {
-    "react-deployment-cicd-aws-cdk": "bin/react-deployment-cicd-aws-cdk.js"
+    "react-deployment-cicd-aws-cdk": "app/main.js"
   },
   "scripts": {
     "build": "tsc",

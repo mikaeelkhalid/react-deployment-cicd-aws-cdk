@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/react-deployment-cicd-aws-cdk.ts",
+  "app": "npx ts-node --prefer-ts-exts app/main.ts",
   "watch": {
     "include": [
       "**"
@@ -19,6 +19,7 @@
   "context": {
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:newStyleStackSynthesis": true,
     "@aws-cdk/core:target-partitions": [
       "aws",
       "aws-cn"
