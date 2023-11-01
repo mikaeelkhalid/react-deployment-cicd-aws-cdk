@@ -1,4 +1,7 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
@@ -21,6 +24,7 @@ export class ReactDeploymentCICDStack extends Stack {
     super(scope, id, props);
 
     const webBucket = this._createWebBucket(props);
+    const distribution = this._createCloudFrontDistribution(webBucket);
   }
 
   private _createWebBucket(props: ReactDeploymentCICDStackProps) {
@@ -37,6 +41,46 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     return webBucket;
+  }
+
+  private _createCloudFrontDistribution(bucket: Bucket) {
+    const oai = new OriginAccessIdentity(this, 'OAI');
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [bucket.arnForObjects('*')],
+        principals: [new CanonicalUserPrincipal(oai.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
+      })
+    );
+
+    const s3Origin = new S3Origin(bucket, {
+      originAccessIdentity: oai,
+    });
+
+    const distribution = new Distribution(this, 'react-deployment-distribution', {
+      defaultBehavior: {
+        origin: s3Origin,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      defaultRootObject: 'index.html',
+      errorResponses: [
+        {
+          httpStatus: 404,
+          responseHttpStatus: 404,
+          responsePagePath: '/index.html',
+          ttl: Duration.seconds(300),
+        },
+        {
+          httpStatus: 403,
+          responseHttpStatus: 500,
+          responsePagePath: '/index.html',
+          ttl: Duration.seconds(300),
+        },
+      ],
+      priceClass: PriceClass.PRICE_CLASS_100,
+    });
+
+    return distribution;
   }
 }
 
