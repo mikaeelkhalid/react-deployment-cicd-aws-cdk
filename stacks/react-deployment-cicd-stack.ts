@@ -3,7 +3,7 @@ import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } 
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
-import { GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -33,6 +33,7 @@ export class ReactDeploymentCICDStack extends Stack {
     /*------------------------codepipeline/cicd--------------------------*/
     const { sourceOutput, sourceAction } = this._createSourceAction(props);
     const { buildOutput, buildProject } = this._createBuildProject(distribution);
+    const buildAction = this._createBuildAction(buildProject, sourceOutput, buildOutput);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -144,6 +145,17 @@ export class ReactDeploymentCICDStack extends Stack {
       buildOutput,
       buildProject,
     };
+  }
+
+  private _createBuildAction(buildProject: Project, sourceOutput: Artifact, buildOutput: Artifact) {
+    const buildAction = new CodeBuildAction({
+      actionName: 'CodeBuild',
+      project: buildProject,
+      input: sourceOutput,
+      outputs: [buildOutput],
+    });
+
+    return buildAction;
   }
 }
 
