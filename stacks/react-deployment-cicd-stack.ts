@@ -3,7 +3,7 @@ import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } 
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
-import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { CodeBuildAction, GitHubSourceAction, S3DeployAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -34,6 +34,7 @@ export class ReactDeploymentCICDStack extends Stack {
     const { sourceOutput, sourceAction } = this._createSourceAction(props);
     const { buildOutput, buildProject } = this._createBuildProject(distribution);
     const buildAction = this._createBuildAction(buildProject, sourceOutput, buildOutput);
+    const deployAction = this._createDeployAction(buildOutput, webBucket);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -156,6 +157,16 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     return buildAction;
+  }
+
+  private _createDeployAction(buildOutput: Artifact, bucket: Bucket) {
+    const deployAction = new S3DeployAction({
+      actionName: 'DeployToS3',
+      input: buildOutput,
+      bucket: bucket,
+    });
+
+    return deployAction;
   }
 }
 
