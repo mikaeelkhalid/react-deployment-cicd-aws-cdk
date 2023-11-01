@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
@@ -36,6 +36,7 @@ export class ReactDeploymentCICDStack extends Stack {
     const buildAction = this._createBuildAction(buildProject, sourceOutput, buildOutput);
     const deployAction = this._createDeployAction(buildOutput, webBucket);
     this._createPipeline(deployAction, sourceAction, buildAction, props, webBucket, distribution);
+    this._outCloudfrontURL(distribution);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -192,6 +193,13 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     codePipeline.node.addDependency(bucket, distribution);
+  }
+
+  private _outCloudfrontURL(distribution: Distribution) {
+    new CfnOutput(this, 'website-url', {
+      value: distribution.distributionDomainName,
+      description: 'cloudfront website url',
+    });
   }
 }
 
