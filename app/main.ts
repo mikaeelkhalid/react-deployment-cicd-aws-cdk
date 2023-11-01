@@ -5,12 +5,17 @@ import { devProps, prodProps } from '../config';
 
 const app = new cdk.App();
 
-const devStackName = devProps.stackName;
+const environmentConfigs = [devProps, prodProps];
 
-const prodStackName = prodProps.stackName;
-
-new ReactDeploymentCICDStack(app, devStackName, devProps);
-
-new ReactDeploymentCICDStack(app, prodStackName, prodProps);
+environmentConfigs.forEach((environment) => {
+  if (environment.isDeploy) {
+    const stackName = environment.stackName;
+    new ReactDeploymentCICDStack(app, stackName, {
+      ...environment,
+      description: `react deployment with cicd ${environment.environmentType} stack`,
+    });
+  }
+});
 
 app.synth();
+

@@ -1,0 +1,33 @@
+stack:
+  name:
+  account:
+  region:
+
+githubRepoOwner:
+githubRepoName:
+
+development:
+  deploy: true
+  environmentType: dev
+  branchName: dev-branch
+  pipelineConfig:
+    name: dev-pipeline
+  s3Config:
+    bucketName: dev-bucket
+    artifactsBucket: dev-artifacts-bucket
+    publicAccess: true
+    indexFile: index-dev.html
+    errorFile: error-dev.html
+
+production:
+  deploy: true
+  environmentType: prod
+  branchName: prod-branch
+  pipelineConfig:
+    name: prod-pipeline
+  s3Config:
+    bucketName: prod-bucket
+    artifactsBucket: prod-artifacts-bucket
+    publicAccess: false
+    indexFile: index-prod.html
+    errorFile: error-prod.html
