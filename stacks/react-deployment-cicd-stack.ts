@@ -1,6 +1,7 @@
 import { Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -25,15 +26,16 @@ export class ReactDeploymentCICDStack extends Stack {
   constructor(scope: Construct, id: string, props: ReactDeploymentCICDStackProps) {
     super(scope, id, props);
 
-    /*-----------------------react deployment---------------------------*/
+    /*------------------------react deployment---------------------------*/
     const webBucket = this._createWebBucket(props);
     const distribution = this._createCloudFrontDistribution(webBucket);
 
-    /*-----------------------codepipeline/cicd---------------------------*/
+    /*------------------------codepipeline/cicd--------------------------*/
     const { sourceOutput, sourceAction } = this._createSourceAction(props);
+    const { buildOutput, buildProject } = this._createBuildProject(distribution);
   }
 
-  /*-----------------------react deployment---------------------------*/
+  /*--------------------------react deployment---------------------------*/
   private _createWebBucket(props: ReactDeploymentCICDStackProps) {
     const { bucketName, indexFile, errorFile, publicAccess } = props;
 
@@ -90,7 +92,7 @@ export class ReactDeploymentCICDStack extends Stack {
     return distribution;
   }
 
-  /*-----------------------codepipeline/cicd---------------------------*/
+  /*--------------------------codepipeline/cicd---------------------------*/
   private _createSourceAction(props: ReactDeploymentCICDStackProps) {
     const { githubRepoOwner, githubRepoName, githubAccessToken, branch } = props;
     const sourceOutput = new Artifact();
@@ -106,6 +108,41 @@ export class ReactDeploymentCICDStack extends Stack {
     return {
       sourceOutput,
       sourceAction,
+    };
+  }
+
+  private _createBuildProject(distribution: Distribution) {
+    const buildOutput = new Artifact();
+    const buildProject = new Project(this, 'react-codebuild-project', {
+      buildSpec: BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          install: {
+            commands: ['echo "installing npm dependencies"', 'npm install'],
+          },
+          build: {
+            commands: ['echo "building react app"', 'npm run build'],
+          },
+          post_build: {
+            commands: [
+              'echo "creating cloudfront invalidation"',
+              `aws cloudfront create-invalidation --distribution-id ${distribution.distributionId} --paths '/*'`,
+            ],
+          },
+        },
+        artifacts: {
+          'base-directory': 'build',
+          files: ['**/*'],
+        },
+      }),
+      environment: {
+        buildImage: LinuxBuildImage.STANDARD_5_0,
+      },
+    });
+
+    return {
+      buildOutput,
+      buildProject,
     };
   }
 }
