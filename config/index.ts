@@ -21,6 +21,7 @@ function getEnvironmentConfig(environmentName: string) {
     errorFile: environment.s3Config.errorFile,
     githubRepoOwner: config.githubRepoOwner,
     githubRepoName: config.githubRepoName,
+    githubAccessToken: config.githubAccessTokenName,
   };
 }
 

@@ -13,6 +13,7 @@ interface ReactDeploymentCICDStackProps extends StackProps {
   errorFile: string;
   githubRepoOwner: string;
   githubRepoName: string;
+  githubAccessToken: string;
 }
 
 export class ReactDeploymentCICDStack extends Stack {

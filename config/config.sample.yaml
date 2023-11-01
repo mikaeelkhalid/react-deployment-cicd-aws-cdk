@@ -5,6 +5,7 @@ stack:
 
 githubRepoOwner:
 githubRepoName:
+githubAccessTokenName:
 
 development:
   deploy: true
