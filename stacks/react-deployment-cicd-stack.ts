@@ -2,7 +2,7 @@ import { Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk
 import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
-import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
+import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CodeBuildAction, GitHubSourceAction, S3DeployAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
@@ -35,6 +35,7 @@ export class ReactDeploymentCICDStack extends Stack {
     const { buildOutput, buildProject } = this._createBuildProject(distribution);
     const buildAction = this._createBuildAction(buildProject, sourceOutput, buildOutput);
     const deployAction = this._createDeployAction(buildOutput, webBucket);
+    this._createPipeline(deployAction, sourceAction, buildAction, props, webBucket, distribution);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -167,6 +168,30 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     return deployAction;
+  }
+
+  private _createPipeline(
+    deployAction: S3DeployAction,
+    sourceAction: GitHubSourceAction,
+    buildAction: CodeBuildAction,
+    props: ReactDeploymentCICDStackProps,
+    bucket: Bucket,
+    distribution: Distribution
+  ) {
+    const { pipelineName } = props;
+
+    const stages = [
+      { stageName: 'Source', actions: [sourceAction] },
+      { stageName: 'Build', actions: [buildAction] },
+      { stageName: 'Deploy', actions: [deployAction] },
+    ];
+
+    const codePipeline = new Pipeline(this, 'codepipeline', {
+      pipelineName: pipelineName,
+      stages,
+    });
+
+    codePipeline.node.addDependency(bucket, distribution);
   }
 }
 
