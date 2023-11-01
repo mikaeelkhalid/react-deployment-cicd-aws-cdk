@@ -1,6 +1,8 @@
-import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
+import { GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -23,10 +25,15 @@ export class ReactDeploymentCICDStack extends Stack {
   constructor(scope: Construct, id: string, props: ReactDeploymentCICDStackProps) {
     super(scope, id, props);
 
+    /*-----------------------react deployment---------------------------*/
     const webBucket = this._createWebBucket(props);
     const distribution = this._createCloudFrontDistribution(webBucket);
+
+    /*-----------------------codepipeline/cicd---------------------------*/
+    const { sourceOutput, sourceAction } = this._createSourceAction(props);
   }
 
+  /*-----------------------react deployment---------------------------*/
   private _createWebBucket(props: ReactDeploymentCICDStackProps) {
     const { bucketName, indexFile, errorFile, publicAccess } = props;
 
@@ -81,6 +88,25 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     return distribution;
+  }
+
+  /*-----------------------codepipeline/cicd---------------------------*/
+  private _createSourceAction(props: ReactDeploymentCICDStackProps) {
+    const { githubRepoOwner, githubRepoName, githubAccessToken, branch } = props;
+    const sourceOutput = new Artifact();
+    const sourceAction = new GitHubSourceAction({
+      actionName: 'GitHub',
+      owner: githubRepoOwner,
+      repo: githubRepoName,
+      branch: branch,
+      oauthToken: SecretValue.secretsManager(githubAccessToken),
+      output: sourceOutput,
+    });
+
+    return {
+      sourceOutput,
+      sourceAction,
+    };
   }
 }
 
