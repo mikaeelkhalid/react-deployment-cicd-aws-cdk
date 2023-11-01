@@ -7,6 +7,8 @@ githubRepoOwner:
 githubRepoName:
 githubAccessTokenName:
 
+# set deploy to 'true' if you want to enable deplyment of environment [development 0r production]
+# one can be 'true' at a time
 development:
   deploy: true
   environmentType: dev
@@ -21,7 +23,7 @@ development:
     errorFile: error-dev.html
 
 production:
-  deploy: true
+  deploy: false
   environmentType: prod
   branchName: prod-branch
   pipelineConfig:
