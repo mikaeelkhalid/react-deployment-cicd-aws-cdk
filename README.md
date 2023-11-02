@@ -52,10 +52,15 @@ The project structure consists of the following key components:
 
    ```bash
    git clone https://github.com/mikaeelkhalid/react-deployment-cicd-aws-cdk.git
+   ```
+
+2. Change project directory.
+
+   ```bash
    cd react-deployment-cicd-aws-cdk
    ```
 
-2. Install project dependencies:
+3. Install project dependencies:
 
    ```bash
    npm install
@@ -68,11 +73,13 @@ To deploy the infrastructure and set up the CI/CD pipeline, follow these steps:
 1. Deploy the AWS CDK stack. This will create the S3 bucket, CloudFront distribution, CodePipeline, and other required AWS
    resources based on the configuration in `config/config.yaml`:
 
-   ```bash
-   cdk deploy
-   ```
+Note: Rename `config/config.sample.yaml` to `config/config.yaml`
 
-   Make sure to approve the changes when prompted.
+```bash
+cdk deploy
+```
+
+Make sure to approve the changes when prompted.
 
 ### Customizing the Configuration ⚙️
 
@@ -107,4 +114,14 @@ cdk destroy
 ```
 
 Make sure to approve the changes when prompted.
+
+## 🛡️ Note
+
+Ensure your IAM permissions are appropriately set to allow the CDK to manage AWS resources on your behalf. Additionally, ensure
+that your GitHub token has the right permissions, especially for accessing the repository and triggering webhooks.
+
+## 🙌 Contribute
+
+Contributions are more than welcome! Feel free to fork this repository, make your improvements, and then submit them back through
+a pull request.
 
