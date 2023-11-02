@@ -117,12 +117,12 @@ cdk destroy
 
 Make sure to approve the changes when prompted.
 
-## 🛡️ Note
+## Note 🛡️
 
 Ensure your IAM permissions are appropriately set to allow the CDK to manage AWS resources on your behalf. Additionally, ensure
 that your GitHub token has the right permissions, especially for accessing the repository and triggering webhooks.
 
-## 🙌 Contribute
+## Contribute 🙌
 
 Contributions are more than welcome! Feel free to fork this repository, make your improvements, and then submit them back through
 a pull request.
