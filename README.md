@@ -6,7 +6,7 @@ This project sets up a Continuous Integration/Continuous Deployment (CI/CD) pipe
 and CloudFront using AWS CDK (Cloud Development Kit). It allows you to automatically build, and deploy your React app based on
 different environments (development and production) with custom configurations.
 
-## Table of Contents 📚
+## 📚 Table of Contents
 
 1. [Prerequisites](#prerequisites)
 2. [Project Structure](#project-structure)
@@ -20,7 +20,7 @@ different environments (development and production) with custom configurations.
 7. [Note](#Note)
 8. [Contribute](#Contribute)
 
-## Prerequisites 🛠
+## 🛠 Prerequisites
 
 Before you get started, make sure you have the following prerequisites in place:
 
@@ -40,7 +40,7 @@ Before you get started, make sure you have the following prerequisites in place:
 
 - Your React application source code hosted on a GitHub repository.
 
-## Project Structure 📂
+## 📂 Project Structure
 
 The project structure consists of the following key components:
 
@@ -48,9 +48,9 @@ The project structure consists of the following key components:
 - `config/config.yaml`: Configuration file that defines the deployment settings for both development and production environments.
 - `stacks/react-deployment-cicd-stack.ts`: AWS CDK stack file that defines the infrastructure and CI/CD pipeline constructs.
 
-## Getting Started 🚀
+## 🚀 Getting Started
 
-### Configure Your Environment ⚙️
+### ⚙️ Configure Your Environment
 
 1. Clone this repository to your local machine.
 
@@ -70,7 +70,7 @@ The project structure consists of the following key components:
    npm install
    ```
 
-### Deploying the Infrastructure 🏗
+### 🏗 Deploying the Infrastructure
 
 To deploy the infrastructure and set up the CI/CD pipeline, follow these steps:
 
@@ -85,12 +85,12 @@ cdk deploy
 
 Make sure to approve the changes when prompted.
 
-### Customizing the Configuration ⚙️
+### ⚙️ Customizing the Configuration
 
 You can customize the deployment settings by editing the `config/config.yaml` file. You can enable or disable deployments for
 development and production environments and adjust other parameters as needed.
 
-## CI/CD Pipeline 🚀
+## 🚀 CI/CD Pipeline
 
 The CI/CD pipeline consists of the following stages:
 
@@ -102,7 +102,7 @@ The CI/CD pipeline consists of the following stages:
 3. **Deploy**: The built React app is deployed to the S3 bucket, and the changes are automatically propagated to the CloudFront
    distribution.
 
-## Accessing the Deployed React App 🌐
+## 🌐 Accessing the Deployed React App
 
 After the deployment is complete, you can access your deployed React application using the following URLs:
 
@@ -119,12 +119,12 @@ cdk destroy
 
 Make sure to approve the changes when prompted.
 
-## Note 🛡️
+## 🛡️ Note
 
 Ensure your IAM permissions are appropriately set to allow the CDK to manage AWS resources on your behalf. Additionally, ensure
 that your GitHub token has the right permissions, especially for accessing the repository and triggering webhooks.
 
-## Contribute 🙌
+## 🙌 Contribute
 
 Contributions are more than welcome! Feel free to fork this repository, make your improvements, and then submit them back through
 a pull request.
