@@ -1,15 +1,110 @@
-# Welcome to your CDK TypeScript project
+# React Deployment CI/CD with AWS CDK 🚀
 
-You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`ReactDeploymentCicdAwsCdkStack`)
-which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
+This project sets up a Continuous Integration/Continuous Deployment (CI/CD) pipeline for deploying a React application to AWS S3
+and CloudFront using AWS CDK (Cloud Development Kit). It allows you to automatically build, test, and deploy your React app based
+on different environments (development and production) with custom configurations.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Table of Contents 📚
 
-## Useful commands
+1. [Prerequisites](#prerequisites)
+2. [Project Structure](#project-structure)
+3. [Getting Started](#getting-started)
+   - [Configure Your Environment](#configure-your-environment)
+   - [Deploying the Infrastructure](#deploying-the-infrastructure)
+   - [Customizing the Configuration](#customizing-the-configuration)
+4. [CI/CD Pipeline](#ci/cd-pipeline)
+5. [Accessing the Deployed React App](#accessing-the-deployed-react-app)
+6. [Cleaning Up](#cleaning-up)
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+## Prerequisites 🛠
+
+Before you get started, make sure you have the following prerequisites in place:
+
+- [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed on your local machine.
+- An [AWS account](https://aws.amazon.com/) with appropriate permissions for AWS CDK and other services used in this project.
+- AWS CDK CLI installed globally. You can install it using the following command:
+
+  ```bash
+  npm install -g aws-cdk
+  ```
+
+- AWS CLI configured with your AWS credentials. You can configure it using:
+
+  ```bash
+  aws configure
+  ```
+
+- Your React application source code hosted on a GitHub repository.
+
+## Project Structure 📂
+
+The project structure consists of the following key components:
+
+- `app/main.ts`: The main AWS CDK application file that defines the infrastructure and CI/CD pipeline.
+- `config/config.yaml`: Configuration file that defines the deployment settings for both development and production environments.
+- `stacks/react-deployment-cicd-stack.ts`: AWS CDK stack file that defines the infrastructure and CI/CD pipeline constructs.
+
+## Getting Started 🚀
+
+### Configure Your Environment ⚙️
+
+1. Clone this repository to your local machine.
+
+   ```bash
+   git clone https://github.com/mikaeelkhalid/react-deployment-cicd-aws-cdk.git
+   cd react-deployment-cicd-aws-cdk
+   ```
+
+2. Install project dependencies:
+
+   ```bash
+   npm install
+   ```
+
+### Deploying the Infrastructure 🏗
+
+To deploy the infrastructure and set up the CI/CD pipeline, follow these steps:
+
+1. Deploy the AWS CDK stack. This will create the S3 bucket, CloudFront distribution, CodePipeline, and other required AWS
+   resources based on the configuration in `config/config.yaml`:
+
+   ```bash
+   cdk deploy
+   ```
+
+   Make sure to approve the changes when prompted.
+
+### Customizing the Configuration ⚙️
+
+You can customize the deployment settings by editing the `config/config.yaml` file. You can enable or disable deployments for
+development and production environments and adjust other parameters as needed.
+
+## CI/CD Pipeline 🚀
+
+The CI/CD pipeline consists of the following stages:
+
+1. **Source**: The GitHub source code is automatically fetched based on the branch specified in the configuration.
+
+2. **Build**: The React app is built using AWS CodeBuild. This stage also creates a CloudFront cache invalidation to ensure the
+   latest version is served.
+
+3. **Deploy**: The built React app is deployed to the S3 bucket, and the changes are automatically propagated to the CloudFront
+   distribution.
+
+## Accessing the Deployed React App 🌐
+
+After the deployment is complete, you can access your deployed React application using the following URLs:
+
+- CloudFront Website URL: `{CloudFront_Distribution_Domain}` (outputted during the deployment)
+- S3 Bucket Website URL: `{S3_Bucket_Website_URL}` (outputted during the deployment)
+
+## Cleaning Up ♻️
+
+To delete the AWS resources created by this project, you can use the following command:
+
+```bash
+cdk destroy
+```
+
+Make sure to approve the changes when prompted.
+
