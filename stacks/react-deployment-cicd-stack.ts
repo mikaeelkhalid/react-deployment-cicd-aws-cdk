@@ -37,6 +37,7 @@ export class ReactDeploymentCICDStack extends Stack {
     const deployAction = this._createDeployAction(buildOutput, webBucket);
     this._createPipeline(deployAction, sourceAction, buildAction, props, webBucket, distribution);
     this._outCloudfrontURL(distribution);
+    this._outS3BucketURL(webBucket);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -213,6 +214,13 @@ export class ReactDeploymentCICDStack extends Stack {
     new CfnOutput(this, 'website-url', {
       value: distribution.distributionDomainName,
       description: 'cloudfront website url',
+    });
+  }
+
+  private _outS3BucketURL(bucket: Bucket) {
+    new CfnOutput(this, 's3-bucket-url', {
+      value: bucket.bucketWebsiteUrl,
+      description: 's3 bucket website url',
     });
   }
 }
