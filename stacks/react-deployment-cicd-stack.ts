@@ -144,6 +144,20 @@ export class ReactDeploymentCICDStack extends Stack {
       },
     });
 
+    buildProject.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['cloudfront:CreateInvalidation'],
+        resources: [`arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`],
+      })
+    );
+
+    buildProject.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['codebuild:StartBuild', 'codebuild:BatchGetBuilds'],
+        resources: [buildProject.projectArn],
+      })
+    );
+
     return {
       buildOutput,
       buildProject,
