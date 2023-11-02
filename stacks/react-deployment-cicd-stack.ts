@@ -194,7 +194,9 @@ export class ReactDeploymentCICDStack extends Stack {
     bucket: Bucket,
     distribution: Distribution
   ) {
-    const { pipelineName } = props;
+    const { pipelineName, pipelineBucket } = props;
+
+    const getPipelineBucket = Bucket.fromBucketName(this, 'pipeline-existing-artifacts-bucket', pipelineBucket);
 
     const stages = [
       { stageName: 'Source', actions: [sourceAction] },
@@ -204,6 +206,7 @@ export class ReactDeploymentCICDStack extends Stack {
 
     const codePipeline = new Pipeline(this, 'codepipeline', {
       pipelineName: pipelineName,
+      artifactBucket: getPipelineBucket,
       stages,
     });
 
@@ -211,14 +214,14 @@ export class ReactDeploymentCICDStack extends Stack {
   }
 
   private _outCloudfrontURL(distribution: Distribution) {
-    new CfnOutput(this, 'website-url', {
+    new CfnOutput(this, 'cloudfront-web-url', {
       value: distribution.distributionDomainName,
       description: 'cloudfront website url',
     });
   }
 
   private _outS3BucketURL(bucket: Bucket) {
-    new CfnOutput(this, 's3-bucket-url', {
+    new CfnOutput(this, 's3-bucket-web-url', {
       value: bucket.bucketWebsiteUrl,
       description: 's3 bucket website url',
     });
