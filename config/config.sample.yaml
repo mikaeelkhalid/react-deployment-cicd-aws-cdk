@@ -1,36 +1,36 @@
 stack:
-  name:
+  name: # required
   account:
   region:
 
-githubRepoOwner:
-githubRepoName:
-githubAccessTokenName:
+githubRepoOwner: # required
+githubRepoName: # required
+githubAccessTokenName: # required: create one in aws secret manager
 
 # set deploy to 'true' if you want to enable deplyment of environment [development 0r production]
 # one can be 'true' at a time
 development:
-  deploy: true
-  environmentType: dev
-  branchName: dev-branch
+  deploy: true # required
+  environmentType: dev # required
+  branchName: dev-branch # required: replace with your desired value
   pipelineConfig:
-    name: dev-pipeline
+    name: dev-pipeline # required: replace with your desired value
   s3Config:
-    bucketName: dev-bucket
-    artifactsBucket: dev-artifacts-bucket
-    publicAccess: true
-    indexFile: index-dev.html
-    errorFile: error-dev.html
+    bucketName: dev-bucket # required: replace with your desired value
+    artifactsBucket: dev-artifacts-bucket # required: create s3 bucket for pipeline artifacts before start
+    publicAccess: true # required: replace with your desired value
+    indexFile: index.html # don't change unless you're sure
+    errorFile: index.html # don't change unless you're sure
 
 production:
-  deploy: false
-  environmentType: prod
-  branchName: prod-branch
+  deploy: false # required
+  environmentType: prod # required
+  branchName: prod-branch # required: replace with your desired value
   pipelineConfig:
-    name: prod-pipeline
+    name: prod-pipeline # required: replace with your desired value
   s3Config:
-    bucketName: prod-bucket
-    artifactsBucket: prod-artifacts-bucket
-    publicAccess: false
-    indexFile: index-prod.html
-    errorFile: error-prod.html
+    bucketName: prod-bucket # required: replace with your desired value
+    artifactsBucket: prod-artifacts-bucket # required: create s3 bucket for pipeline artifacts before start
+    publicAccess: true # required: replace with your desired value
+    indexFile: index.html # don't change unless you're sure
+    errorFile: index.html # don't change unless you're sure
