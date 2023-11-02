@@ -15,6 +15,8 @@ on different environments (development and production) with custom configuration
 4. [CI/CD Pipeline](#ci/cd-pipeline)
 5. [Accessing the Deployed React App](#accessing-the-deployed-react-app)
 6. [Cleaning Up](#cleaning-up)
+7. [Note](#Note)
+8. [Contribute](#Contribute)
 
 ## Prerequisites 🛠
 
