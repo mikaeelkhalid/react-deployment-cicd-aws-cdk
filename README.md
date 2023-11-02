@@ -1,8 +1,8 @@
 # React Deployment CI/CD with AWS CDK 🚀
 
 This project sets up a Continuous Integration/Continuous Deployment (CI/CD) pipeline for deploying a React application to AWS S3
-and CloudFront using AWS CDK (Cloud Development Kit). It allows you to automatically build, test, and deploy your React app based
-on different environments (development and production) with custom configurations.
+and CloudFront using AWS CDK (Cloud Development Kit). It allows you to automatically build, and deploy your React app based on
+different environments (development and production) with custom configurations.
 
 ## Table of Contents 📚
 
