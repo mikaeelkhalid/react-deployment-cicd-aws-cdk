@@ -109,7 +109,7 @@ After the deployment is complete, you can access your deployed React application
 - CloudFront Website URL: `{CloudFront_Distribution_Domain}` (outputted during the deployment)
 - S3 Bucket Website URL: `{S3_Bucket_Website_URL}` (outputted during the deployment)
 
-## Cleaning Up ♻️
+## ♻️ Cleaning Up
 
 To delete the AWS resources created by this project, you can use the following command:
 
