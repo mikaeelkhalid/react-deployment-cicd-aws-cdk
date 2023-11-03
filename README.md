@@ -6,6 +6,8 @@ This project sets up a Continuous Integration/Continuous Deployment (CI/CD) pipe
 and CloudFront using AWS CDK (Cloud Development Kit). It allows you to automatically build, and deploy your React app based on
 different environments (development and production) with custom configurations.
 
+This project continues the: [react-deployment-aws-cdk](https://github.com/mikaeelkhalid/react-deployment-aws-cdk) project.
+
 ## 📚 Table of Contents
 
 1. [Prerequisites](#prerequisites)
