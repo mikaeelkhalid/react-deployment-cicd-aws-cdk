@@ -1,15 +1,21 @@
 import { CfnOutput, Duration, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution, OriginAccessIdentity, PriceClass, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CodeBuildAction, GitHubSourceAction, S3DeployAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 interface ReactDeploymentCICDStackProps extends StackProps {
   environmentType: string;
+  sslCertificateArn: string;
+  route53Subdomain: string;
+  hostedZone: string;
   branch: string;
   pipelineName: string;
   bucketName: string;
@@ -28,7 +34,7 @@ export class ReactDeploymentCICDStack extends Stack {
 
     /*------------------------react deployment---------------------------*/
     const webBucket = this._createWebBucket(props);
-    const distribution = this._createCloudFrontDistribution(webBucket);
+    const distribution = this._createCloudFrontDistribution(webBucket, props);
 
     /*------------------------codepipeline/cicd--------------------------*/
     const { sourceOutput, sourceAction } = this._createSourceAction(props);
@@ -38,6 +44,10 @@ export class ReactDeploymentCICDStack extends Stack {
     this._createPipeline(deployAction, sourceAction, buildAction, props, webBucket, distribution);
     this._outCloudfrontURL(distribution);
     this._outS3BucketURL(webBucket);
+
+    /*-----------------------------rout53------------------------------*/
+    const zoneRecord = this._createRout53Record(distribution, props);
+    this._outHostedZoneRecordName(zoneRecord);
   }
 
   /*--------------------------react deployment---------------------------*/
@@ -57,8 +67,13 @@ export class ReactDeploymentCICDStack extends Stack {
     return webBucket;
   }
 
-  private _createCloudFrontDistribution(bucket: Bucket) {
+  private _createCloudFrontDistribution(bucket: Bucket, props: ReactDeploymentCICDStackProps) {
+    const { sslCertificateArn, hostedZone, route53Subdomain } = props;
+
+    const alternateDomainName = `${route53Subdomain}.${hostedZone}`;
+
     const oai = new OriginAccessIdentity(this, 'OAI');
+
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetObject'],
@@ -77,6 +92,8 @@ export class ReactDeploymentCICDStack extends Stack {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       defaultRootObject: 'index.html',
+      certificate: Certificate.fromCertificateArn(this, 'acm-certificate', sslCertificateArn),
+      domainNames: [alternateDomainName],
       errorResponses: [
         {
           httpStatus: 404,
@@ -95,6 +112,21 @@ export class ReactDeploymentCICDStack extends Stack {
     });
 
     return distribution;
+  }
+
+  /*------------------------------rout53---------------------------------*/
+  private _createRout53Record(distribution: Distribution, props: ReactDeploymentCICDStackProps) {
+    const { hostedZone, route53Subdomain } = props;
+
+    const zone = HostedZone.fromLookup(this, 'zone', { domainName: hostedZone });
+
+    const record = new ARecord(this, 'alias-record', {
+      zone: zone,
+      recordName: route53Subdomain,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    });
+
+    return record;
   }
 
   /*--------------------------codepipeline/cicd---------------------------*/
@@ -224,6 +256,13 @@ export class ReactDeploymentCICDStack extends Stack {
     new CfnOutput(this, 's3-bucket-web-url', {
       value: bucket.bucketWebsiteUrl,
       description: 's3 bucket website url',
+    });
+  }
+
+  private _outHostedZoneRecordName(zoneRecord: ARecord) {
+    new CfnOutput(this, 'zone-record-name', {
+      value: zoneRecord.domainName,
+      description: 'hosted zone record url',
     });
   }
 }

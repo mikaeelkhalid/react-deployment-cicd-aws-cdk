@@ -1,17 +1,20 @@
 stack:
   name: # required
-  account:
-  region:
+  account: # required
+  region: # required
 
 githubRepoOwner: # required
 githubRepoName: # required
 githubAccessTokenName: # required: create one in aws secret manager
+sslCertificateArn: # required
+hostedZone: # required
 
 # set deploy to 'true' if you want to enable deplyment of environment [development 0r production]
 # one can be 'true' at a time
 development:
   deploy: true # required
   environmentType: dev # required
+  route53Subdomain: # required
   branchName: dev-branch # required: replace with your desired value
   pipelineConfig:
     name: dev-pipeline # required: replace with your desired value
@@ -25,6 +28,7 @@ development:
 production:
   deploy: false # required
   environmentType: prod # required
+  route53Subdomain: # required
   branchName: prod-branch # required: replace with your desired value
   pipelineConfig:
     name: prod-pipeline # required: replace with your desired value
