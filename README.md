@@ -8,6 +8,8 @@ different environments (development and production) with custom configurations.
 
 This project continues the: [react-deployment-aws-cdk](https://github.com/mikaeelkhalid/react-deployment-aws-cdk) project.
 
+Route53 hosted zone support version here: [route53 hosted zone version](https://github.com/mikaeelkhalid/react-deployment-cicd-aws-cdk/tree/route53-version)
+
 ## 📚 Table of Contents
 
 1. [Prerequisites](#prerequisites)
