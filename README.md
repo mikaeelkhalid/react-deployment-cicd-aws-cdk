@@ -66,6 +66,10 @@ The project structure consists of the following key components:
    cd react-deployment-cicd-aws-cdk
    ```
 
+   ```bash
+   change branch to 'route53-version'
+   ```
+
 3. Install project dependencies:
 
    ```bash
@@ -110,6 +114,7 @@ After the deployment is complete, you can access your deployed React application
 
 - CloudFront Website URL: `{CloudFront_Distribution_Domain}` (outputted during the deployment)
 - S3 Bucket Website URL: `{S3_Bucket_Website_URL}` (outputted during the deployment)
+- Hosted Zone URL: `{Hosted_Zone_URL}` (outputted during hosted zone record name)
 
 ## ♻️ Cleaning Up
 
